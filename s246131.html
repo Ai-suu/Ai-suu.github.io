@@ -67,8 +67,10 @@ asr.onresult = function(event){
     let output_not_final = '';
     if (event.results[event.resultIndex].isFinal) { // 結果が確定（Final）のとき
 	    asr.abort(); // 音声認識を停止
-	    
+        let ret = response[transcript];
+
         let answer;
+        let webpage;
         
         let keys = Object.keys(response);
         keys.forEach(function(key) {
@@ -83,26 +85,27 @@ asr.onresult = function(event){
             });
 
             if(flag){
-		        answer = response[key];
-                console.log(key + " : " + answer);
+		        ret = response[key];
+                console.log(key + " : " + ret);
             }
         });
-
-        if(typeof answer == 'undefined'){
+        
+        if(typeof ret == 'undefined'){
 	        answer = "ごめんなさい。わかりません。";
     	}else{
             answer = ret[0];
             webpage = ret[1];
         }
+
         output += transcript + ' => ' + answer + '<br>';
-        
-        tts.text = answer;
+
+	    tts.text = answer;
 	    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
 	    tts.onend = function(event){
             if(typeof webpage != 'undefined'){
                 location.href = webpage; // ページを移動
-            }  
-	        asr.start(); // 音声認識を再開
+            }   
+            asr.start(); // 音声認識を再開 
 	    }
 
 	    speechSynthesis.speak(tts); // 再生
