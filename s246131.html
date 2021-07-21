@@ -10,7 +10,7 @@
 
 <h1>呼びかけてみてください</h1>
 
-<h2>この商品について教えて、ホームページをみせてなど</h2>
+<h2>この商品について教えて、ホームページをみせて　など</h2>
 
 <p>
 <button id="startButton">start</button>
@@ -90,13 +90,18 @@ asr.onresult = function(event){
 
         if(typeof answer == 'undefined'){
 	        answer = "ごめんなさい。わかりません。";
-    	}
-	
+    	}else{
+            answer = ret[0];
+            webpage = ret[1];
+        }
         output += transcript + ' => ' + answer + '<br>';
         
         tts.text = answer;
 	    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
 	    tts.onend = function(event){
+            if(typeof webpage != 'undefined'){
+                location.href = webpage; // ページを移動
+            }  
 	        asr.start(); // 音声認識を再開
 	    }
 
