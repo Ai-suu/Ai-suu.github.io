@@ -26,15 +26,15 @@
 <script>
 // 応答の定義（ハッシュ）    
 var response = {
-    "こんにちは": "こんにちは",
-    "商品,教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
-    "これ,教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
-    "この,教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
     "大きさ": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
     "サイズ": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "どのくらい": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "これ": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "この": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
     "ホームページ": ["ホームページを表示します", "https://Ai-suu.github.io/SofaWEB/index.html"],
-    "他の,ソファ": ["他のソファを表示します", "https://www.nitori-net.jp/ec/cat/Sofa/"],
-    "他の,ベッド": ["他のベッドを表示します", "https://www.nitori-net.jp/ec/cat/Bed/"],
+    "店のページ": ["ホームページを表示します", "https://Ai-suu.github.io/SofaWEB/index.html"],
+    "他のソファ": ["ソファ一覧を表示します", "https://www.nitori-net.jp/ec/cat/Sofa/"],
+    "ベッド": ["ベッド一覧を表示します", "https://www.nitori-net.jp/ec/cat/Bed/"],
     "購入": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"],
     "買い": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"],
     "買う": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"]
@@ -74,94 +74,55 @@ asr.onresult = function(event){
     let transcript = event.results[event.resultIndex][0].transcript; // 結果文字列
 
     let output_not_final = '';
+    let webpage;
+    
     if (event.results[event.resultIndex].isFinal) { // 結果が確定（Final）のとき
 	    asr.abort(); // 音声認識を停止
-        
-        let ret = response[transcript];
 
-        let answer;
-        let webpage;
-        
-        let keys = Object.keys(response);
-        keys.forEach(function(key) {
-            let flag = true;
-            console.log(transcript);
-            key.split(',').forEach(function(word) {              
-                let pattern = new RegExp(word);
-                let flag_test = pattern.test(transcript); // マッチしたらtrue, しなかったらfalse
-                flag = flag && flag_test; // 両方trueならtrue
-                console.log(pattern + '+' + ':' + flag_test);
-                //flag = flag && new RegExp(word).test(transcript);
-            });
+		let queryURL = URL + APIID + "&intext=" + transcript;
+		console.log(queryURL);
+		
+		// HTTPリクエストの準備
+		const request = new XMLHttpRequest();
+		request.open('GET', queryURL, true);
+		request.responseType = 'json'; // レスポンスはJSON形式に変換
+	
+		// HTTPの状態が変化したときのイベントハンドラ
+		request.onreadystatechange = function() {
+    		if (this.readyState == 4 && this.status == 200) {
+    		// readyState == 4 操作完了
+    		// status == 200 リクエスト成功（HTTPレスポンス）
+				
+				let res = this.response; // 結果はJSON形式
 
-            if(flag){
-		        ret = response[key];
-                console.log(key + " : " + ret);
-            }
-            answer = ret[0];
-            webpage = ret[1];
-        });
-            output += transcript + ' => ' + ret + '<br>';
-        tts.text = ret;
-        // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
-        tts.onend = function(event){
-            if(typeof webpage != 'undefined'){
-                location.href = webpage; // ページを移動
-            }   
-            asr.start(); // 音声認識を再開 
-        }
-        
-        speechSynthesis.speak(tts);        // 再生
-        
-        
-        if(typeof ret == 'undefined'){
-            let queryURL = URL + APIID + "&intext=" + transcript;
-            console.log(queryURL);
-            
-            // HTTPリクエストの準備
-            const request = new XMLHttpRequest();
-            request.open('GET', queryURL, true);
-            request.responseType = 'json'; // レスポンスはJSON形式に変換
-        
-            // HTTPの状態が変化したときのイベントハンドラ
-            request.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                // readyState == 4 操作完了
-                // status == 200 リクエスト成功（HTTPレスポンス）
-                    
-                    let res = this.response; // 結果はJSON形式
-
-                    Object.keys(res.result).forEach(function (key) {
-                        console.log(key + ": " + res.result[key])
-                    });
-                
-                    // method が SAY のときのみ
-                    if(res.result.method == "SAY"){
+				Object.keys(res.result).forEach(function (key) {
+					console.log(key + ": " + res.result[key])
+				});
+			
+				// method が SAY のときのみ
+				if(res.result.method == "SAY"){
 					var answer = res.result.param_text_tts || res.result.param_text;
 					tts.text = answer;
 
-	    			// 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
-	    			tts.onend = function(event){
-	        			asr.start(); // 音声認識を再開
-	    			}
-	    	
-					output += transcript + ' => ' + answer + '<br>';
-					resultOutput.innerHTML = output;
-	    			speechSynthesis.speak(tts); // 再生
-                    }else{
-                        asr.start();  // 音声認識を再開
+	    				    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
+                    tts.onend = function(event){
+                        if(typeof webpage != 'undefined'){
+                            location.href = webpage; // ページを移動
+                        }   
+                        asr.start(); // 音声認識を再開 
+                    }
+                    output += transcript + ' => ' + answer + '<br>';
+                    resultOutput.innerHTML = output;
+                    speechSynthesis.speak(tts); // 再生
                     }
                 }
-            }
-            // HTTPリクエストの実行
-            request.send();
+                // HTTPリクエストの実行
+                request.send();
+        } else { // 結果がまだ未確定のとき
+                output_not_final = '<span style="color:#ddd;">' + transcript + '</span>';
+                resultOutput.innerHTML = output + output_not_final;
         }
- 
-    } else { // 結果がまだ未確定のとき
-        output_not_final = '<span style="color:#ddd;">' + transcript + '</span>';
-        resultOutput.innerHTML = output + output_not_final;
     }
-}
 
 // 開始ボタンのイベントハンドラ
 startButton.addEventListener('click', function() {
