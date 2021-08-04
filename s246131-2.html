@@ -9,10 +9,13 @@
 </head>
 <body>
 
-<h1>呼びかけてみてください</h1>
+<h1>こんにちは</h1>
 
-<h3>サイズが知りたい場合・・・　「サイズを教えて」</h3>
-<h3>違う商品を探したいとき・・・　「他のソファをみせて」　など</h3>
+<p>サイズが知りたい場合・・・　「サイズを教えて」</p>
+<p>違う商品を探したいとき・・・　「他のソファをみせて」　</p>
+<p>この商品が欲しいとき・・・　「これを買う」　</p>
+<br></br>
+<p>「○○をみせて」や「○○をみせて」と話しかけてみてください</p>
 
 <p class="button">
 <button id="startButton">start</button>
@@ -26,18 +29,30 @@
 <script>
 // 応答の定義（ハッシュ）    
 var response = {
-    "大きさ": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
-    "サイズ": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
-    "どのくらい": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
-    "これ": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
-    "この": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
-    "ホームページ": ["ホームページを表示します", "https://Ai-suu.github.io/SofaWEB/index.html"],
-    "店のページ": ["ホームページを表示します", "https://Ai-suu.github.io/SofaWEB/index.html"],
-    "他のソファ": ["ソファ一覧を表示します", "https://www.nitori-net.jp/ec/cat/Sofa/"],
-    "ベッド": ["ベッド一覧を表示します", "https://www.nitori-net.jp/ec/cat/Bed/"],
-    "購入": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"],
-    "買い": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"],
-    "買う": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"]
+    "大きさを教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "サイズを教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "サイズ教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "どのくらいか教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "これについて教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "このソファについて教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "このソファのことを教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
+    "ホームページをみせて": ["ホームページを表示します", "https://Ai-suu.github.io/SofaWEB/index.html"],
+    "店のページをみせて": ["ホームページを表示します", "https://Ai-suu.github.io/SofaWEB/index.html"],
+    "ホームページをみたい": ["ホームページを表示します", "https://Ai-suu.github.io/SofaWEB/index.html"],
+    "店のページをみたい": ["ホームページを表示します", "https://Ai-suu.github.io/SofaWEB/index.html"],
+    "他のソファがみたい": ["ソファ一覧を表示します", "https://www.nitori-net.jp/ec/cat/Sofa/"],
+    "他のソファをみせて": ["ソファ一覧を表示します", "https://www.nitori-net.jp/ec/cat/Sofa/"],
+    "他のソファがいい": ["ソファ一覧を表示します", "https://www.nitori-net.jp/ec/cat/Sofa/"],
+    "他のソファーがみたい": ["ソファ一覧を表示します", "https://www.nitori-net.jp/ec/cat/Sofa/"],
+    "ベッドがみたい": ["ベッド一覧を表示します", "https://www.nitori-net.jp/ec/cat/Bed/"],
+    "ベッドをみせて": ["ベッド一覧を表示します", "https://www.nitori-net.jp/ec/cat/Bed/"],
+    "ベッドをみたい": ["ベッド一覧を表示します", "https://www.nitori-net.jp/ec/cat/Bed/"],
+    "ベッドが欲しい": ["ベッド一覧を表示します", "https://www.nitori-net.jp/ec/cat/Bed/"],
+    "買う": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"],
+    "これを買う": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"],
+    "買いたい": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"],
+    "これを買いたい": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"],
+    "これが欲しい": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"]
 };
 
 const URL = "https://jlp.yahooapis.jp/NLUService/V1/analyze?appid=dj00aiZpPTF1eTkxck52dWlFNiZzPWNvbnN1bWVyc2VjcmV0Jng9MTI-&intext=%E6%96%B0%E5%AE%BF%E3%81%AE%E5%A4%A9%E6%B0%97"; // APIのリクエストURL
@@ -74,10 +89,12 @@ asr.onresult = function(event){
     let transcript = event.results[event.resultIndex][0].transcript; // 結果文字列
 
     let output_not_final = '';
-    let webpage;
     
     if (event.results[event.resultIndex].isFinal) { // 結果が確定（Final）のとき
 	    asr.abort(); // 音声認識を停止
+        
+        let answer;
+        let webpage;
 
 		let queryURL = URL + APIID + "&intext=" + transcript;
 		console.log(queryURL);
@@ -103,18 +120,33 @@ asr.onresult = function(event){
 				if(res.result.method == "SAY"){
 					var answer = res.result.param_text_tts || res.result.param_text;
 					tts.text = answer;
-
-	    				    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
-                    tts.onend = function(event){
-                        if(typeof webpage != 'undefined'){
-                            location.href = webpage; // ページを移動
-                        }   
-                        asr.start(); // 音声認識を再開 
-                    }
                     output += transcript + ' => ' + answer + '<br>';
                     resultOutput.innerHTML = output;
-                    speechSynthesis.speak(tts); // 再生
+                }else{
+                    let ret = response[transcript];
+
+                        let answer;
+                        let webpage;
+                        
+                        if(typeof ret == 'undefined'){
+                            answer = "ごめんなさい。答えが思いつきません。";
+                        }else{
+                            answer = ret[0];
+                            webpage = ret[1];
+                        }
+
+                        output += transcript + ' => ' + answer + '<br>';
+                        tts.text = answer;
                 }
+                // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
+                tts.onend = function(event){
+                    if(typeof webpage != 'undefined'){
+                        location.href = webpage; // ページを移動
+                    }   
+                    asr.start(); // 音声認識を再開 
+                }
+                
+                speechSynthesis.speak(tts); // 再生
             }
         }
         // HTTPリクエストの実行
