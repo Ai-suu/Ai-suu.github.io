@@ -127,23 +127,22 @@ asr.onresult = function(event){
                     // method が SAY のときのみ
                     if(res.result.method == "SAY"){
                         var answer = res.result.param_text_tts || res.result.param_text;
-                        tts.text = answer;
                     }
                }
            }
        }
         output += transcript + ' => ' + answer + '<br>';
         resultOutput.innerHTML = output;
-	    tts.text = answer;
-	    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
-	    tts.onend = function(event){
-            if(typeof webpage != 'undefined'){
-                location.href = webpage; // ページを移動
-            }   
-            asr.start(); // 音声認識を再開 
-	    }
-        
-	    speechSynthesis.speak(tts); // 再生
+        tts.text = answer;
+	// 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
+	tts.onend = function(event){
+	if(typeof webpage != 'undefined'){
+	location.href = webpage; // ページを移動
+	}   
+	asr.start(); // 音声認識を再開 
+	}
+
+	speechSynthesis.speak(tts); // 再生
 
         // HTTPリクエストの実行
         request.send();
