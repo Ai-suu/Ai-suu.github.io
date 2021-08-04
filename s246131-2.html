@@ -40,8 +40,9 @@ var response = {
     "買う": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"]
 };
 
-const URL = "https://jlp.yahooapis.jp/NLUService/V1/analyze"; // APIのリクエストURL
+const URL = "https://jlp.yahooapis.jp/NLUService/V1/analyze?appid=dj00aiZpPTF1eTkxck52dWlFNiZzPWNvbnN1bWVyc2VjcmV0Jng9MTI-&intext=%E6%96%B0%E5%AE%BF%E3%81%AE%E5%A4%A9%E6%B0%97"; // APIのリクエストURL
 const APIID = "dj00aiZpPTF1eTkxck52dWlFNiZzPWNvbnN1bWVyc2VjcmV0Jng9MTI-"; // あなたのアプリケーションID
+
 
 const startButton = document.querySelector('#startButton'); // 開始ボタン
 const stopButton = document.querySelector('#stopButton'); // 停止ボタン
@@ -76,6 +77,7 @@ asr.onresult = function(event){
     let output_not_final = '';
     if (event.results[event.resultIndex].isFinal) { // 結果が確定（Final）のとき
 	    asr.abort(); // 音声認識を停止
+        
         let ret = response[transcript];
 
         let answer;
@@ -97,10 +99,12 @@ asr.onresult = function(event){
 		        ret = response[key];
                 console.log(key + " : " + ret);
             }
+            answer = ret[0];
+            webpage = ret[1];
         });
         
         if(typeof ret == 'undefined'){
-                let queryURL = URL + APIID + "&intext=" + transcript;
+            let queryURL = URL + APIID + "&intext=" + transcript;
             console.log(queryURL);
             
             // HTTPリクエストの準備
@@ -124,28 +128,11 @@ asr.onresult = function(event){
                     if(res.result.method == "SAY"){
                         var answer = res.result.param_text_tts || res.result.param_text;
                         tts.text = answer;
-                        
-                        // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
-                        tts.onend = function(event){
-                            asr.start(); // 音声認識を再開
-                        }
-                
-                        output += transcript + ' => ' + answer + '<br>';
-                        resultOutput.innerHTML = output;
-                        speechSynthesis.speak(tts); // 再生
-                    }else{
-                        asr.start();  // 音声認識を再開
                     }
-                }
-            }
-            // HTTPリクエストの実行
-            request.send();
-    	}else{
-            answer = ret[0];
-            webpage = ret[1];
-        }
-
-        output += transcript + ' => ' + answer + '<br>';
+               }
+           }
+       }
+       output += transcript + ' => ' + answer + '<br>';
 
 	    tts.text = answer;
 	    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
@@ -155,12 +142,14 @@ asr.onresult = function(event){
             }   
             asr.start(); // 音声認識を再開 
 	    }
-
+        // HTTPリクエストの実行
+        request.send();
+        resultOutput.innerHTML = output;
 	    speechSynthesis.speak(tts); // 再生
     } else { // 結果がまだ未確定のとき
         output_not_final = '<span style="color:#ddd;">' + transcript + '</span>';
+        resultOutput.innerHTML = output + output_not_final;
     }
-    resultOutput.innerHTML = output + output_not_final;
 }
 
 // 開始ボタンのイベントハンドラ
