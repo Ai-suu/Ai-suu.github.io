@@ -26,6 +26,7 @@
 <script>
 // 応答の定義（ハッシュ）    
 var response = {
+    "こんにちは": "こんにちは",
     "商品,教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
     "これ,教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
     "この,教えて": ["商品ページを表示します", "https://Ai-suu.github.io/SofaWEB/sofapage.html"],
@@ -39,9 +40,8 @@ var response = {
     "買う": ["購入ページに移動します", "https://Ai-suu.github.io/buy.html"]
 };
 
-const URL = "https://jlp.yahooapis.jp/NLUService/V1/analyze?appid=dj00aiZpPTF1eTkxck52dWlFNiZzPWNvbnN1bWVyc2VjcmV0Jng9MTI-&intext=%E6%96%B0%E5%AE%BF%E3%81%AE%E5%A4%A9%E6%B0%97"; // APIのリクエストURL
+const URL = "https://jlp.yahooapis.jp/NLUService/V1/analyze"; // APIのリクエストURL
 const APIID = "dj00aiZpPTF1eTkxck52dWlFNiZzPWNvbnN1bWVyc2VjcmV0Jng9MTI-"; // あなたのアプリケーションID
-
 
 const startButton = document.querySelector('#startButton'); // 開始ボタン
 const stopButton = document.querySelector('#stopButton'); // 停止ボタン
@@ -126,26 +126,25 @@ asr.onresult = function(event){
                     // method が SAY のときのみ
                     if(res.result.method == "SAY"){
                         var answer = res.result.param_text_tts || res.result.param_text;
+                        tts.text = answer;
                     }
                }
            }
        }
-        output += transcript + ' => ' + answer + '<br>';
-        resultOutput.innerHTML = output;
-        tts.text = answer;
-	// 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
-	tts.onend = function(event){
-	if(typeof webpage != 'undefined'){
-	location.href = webpage; // ページを移動
-	}   
-	asr.start(); // 音声認識を再開 
-	}
+       output += transcript + ' => ' + answer + '<br>';
 
-	speechSynthesis.speak(tts); // 再生
-
+	    tts.text = answer;
+	    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
+	    tts.onend = function(event){
+            if(typeof webpage != 'undefined'){
+                location.href = webpage; // ページを移動
+            }   
+            asr.start(); // 音声認識を再開 
+	    }
         // HTTPリクエストの実行
         request.send();
-      
+        resultOutput.innerHTML = output;
+	    speechSynthesis.speak(tts); // 再生
     } else { // 結果がまだ未確定のとき
         output_not_final = '<span style="color:#ddd;">' + transcript + '</span>';
         resultOutput.innerHTML = output + output_not_final;
