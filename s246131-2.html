@@ -100,7 +100,7 @@ asr.onresult = function(event){
             }
             answer = ret[0];
             webpage = ret[1];
-        }
+        });
             output += transcript + ' => ' + ret + '<br>';
         tts.text = ret;
         // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
